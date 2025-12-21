@@ -1,0 +1,264 @@
+/* RENDER START */
+/*div.bs-vc-wrapper div[class*="-float-left"][class*="-column-1"] img,*/
+/*[class*="-loc-header_aside_logo"] img,*/
+/*[class*="-after-header"] img,*/
+/*[class*="-before-header"] img,*/
+/*#sidebar-primary-sidebar .c5 img,*/
+/*div.content-column .vc_column_container.vc_col-sm-4 div[class*="-align-left"][class*="-column-1"] img{*/
+/*    image-rendering: auto;*/
+/*    image-rendering: crisp-edges;*/
+/*    image-rendering: pixelated;*/
+/*}*/
+
+
+@media screen and (width:768px) {
+    .section-heading.sh-t4.sh-s4 .h-text:before,
+    .section-heading.sh-t4.sh-s4 .h-text:after {
+        display: none !important;
+    }
+}
+
+/*
+HIDDEN BANNERS
+START
+*/
+@media (min-width: 1140px){
+    body .ldqa-hide-on-desktop *{
+        display: none !important;
+    }
+}
+/*
+END
+HIDDEN BANNERS
+*/
+
+/* 1️⃣ Company */
+@media screen and (min-width:1000px) {
+    [class*="-before-header"] {
+        max-width: fit-content;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Banner 1 */
+    [class*="-before-header"] > div:first-child{
+        padding-right: 5px;
+		margin-bottom: 0px;
+    }
+
+    [class*="-before-header"] div{
+        display: inline-block !important;
+        margin-left:auto;
+        margin-right:auto;
+    }
+}
+
+@media screen and (max-width:999px) {
+    /* Banner 1 */
+    [class*="-before-header"] {
+        max-width: fit-content;
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+}
+
+
+/* 2️⃣ Company */
+@media screen and (min-width:770px) {
+    /* 2 Company */
+    [class*="-after-header"] {
+        max-width: 1180px;
+        display: flex;
+        margin-right: auto;
+        justify-content: space-between;
+        align-items: flex-start;
+		margin-top:10px;
+    }
+
+    /* Banner 4 */
+    body.home [class*="-after-header"] > div:first-child {
+        padding-bottom:23px;
+    }
+    [class*="-after-header"] > div:first-child{
+        padding-right: 5px;
+        margin-left:0px;
+        margin-top:0 !important;
+    }
+    /* Banner 6 */
+    [class*="-after-header"] > div:last-child{
+        margin-right:0px;
+        max-width: 292px;
+    }
+
+    [class*="-after-header"] div{
+        display: inline-block !important;
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+}
+@media screen and (max-width:769px) {
+    /* 2 Company */
+    
+    body.home [class*="-after-header"] {
+        padding-bottom: 16px;
+    }
+    [class*="-after-header"] {
+        display: flex;
+        margin-right: auto;
+        justify-content: center;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    /* Banner 4 */
+    [class*="-after-header"] > div:first-child{
+        order:2;
+        margin-left:0px;
+        margin-top:0 !important;
+    }
+    /* Banner 6 */
+    [class*="-after-header"] > div:last-child{
+        order:3;
+        margin-left:0px;
+        margin-top:0 !important;
+    }
+    /* Banner 5 */
+    [class*="-after-header"] > div:nth-child(2){
+        min-width:100%;
+        display:block;
+        position:relative;
+    }
+
+}
+@media screen and (max-width:430px) {
+    /* 2 Company */
+    [class*="-after-header"] {
+        display: flex;
+        margin-right: auto;
+        justify-content: space-around;
+        flex-direction: row;
+    }
+}
+
+
+
+
+/* 3️⃣ Company */
+.content-container [class*="-float-left"].no-bg-box-model  .comp-3-2 img,
+.content-container [class*="-float-left"].no-bg-box-model  .comp-3-1 img,
+.content-container [class*="-float-left"].no-bg-box-model  .comp-4-1 img,
+.content-container [class*="-float-left"].no-bg-box-model  .comp-4-2 img{
+    z-index:9 !important;
+    background-color: white;
+    position:relative;
+}
+
+@media screen and (min-width:770px) {
+    /* 3,4,5,6,7 Company */
+    .content-container [class*="-float-left"].no-bg-box-model {
+        max-width: 100%;
+        min-width: 100%;
+        display: flex;
+        margin-right: auto;
+        justify-content: space-between;
+        height: auto;
+    }
+    /* 8,10 Banner */
+    .content-container [class*="-float-left"].no-bg-box-model  > div:nth-child(2) img{
+        margin-right:130px;
+        display:block;
+    }
+	
+	/* 2022-02-01 fixes 1*/
+	body.home .main-wrap.content-main-wrap > .container.adcontainer {
+    	margin-top: -6px;
+	}
+
+}
+@media screen and (max-width:769px) {
+
+    /* 3,4,5,6,7 Company */
+    .content-container [class*="-float-left"].no-bg-box-model {
+        max-width: 100%;
+        min-width: 100%;
+        display: flex;
+        margin-right: auto;
+        justify-content: space-between;
+        height: auto;
+    }
+
+	/* 2022-02-01 fixes 2*/
+	body [class*="hide-on-phone"] {
+        display: none !important;
+    }
+	body.home [class*="-after-header"] {
+		margin-top: 0px !important;
+	}
+
+	body.home .main-wrap.content-main-wrap > .container.adcontainer {
+    	padding-top: 10px;
+    	padding-bottom: 15px;
+	}
+}
+
+@media screen and (max-width: 615px) {
+    /* 3,4,5,6,7 Company */
+    .content-container [class*="-float-left"].no-bg-box-model {
+        flex-direction: column;
+    }
+}
+
+.rama-prom {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-bottom: 5px;
+}
+
+aside#sidebar-primary-sidebar .rama-prom:first-child{
+    padding-top:5px;
+}
+aside#sidebar-primary-sidebar .rama-prom{
+    margin-bottom:-30px;
+}
+
+[class*="-before-header"] [class*="-empty-note"] {
+    display: none !important;
+}
+
+/*
+Publisher Sticky Banners FIX CSS
+START
+*/
+@media screen and (min-width:1435px){
+    .publisher_after_banners_publish body:not(.single):not(.home) .bs-sks {
+        padding-top:100px;
+    }
+
+    .is-sticky .bs-sksitem.bs-sksiteml,
+    .is-sticky .bs-sksitem.bs-sksitemr {
+        padding-top:0px !important;
+    }
+    div.Sticky_RightBanner {
+        height: 600px !important;
+        float: none !important;
+    }
+    .Sticky_RightBanner .bs-sksitem.bs-sksitemr{
+        margin-right: 12rem;
+    }
+    div.Sticky_RightBanner {
+        margin-top: -600px;
+    }
+}
+@media screen and (max-width:1434px){
+    .bs-sks {
+        display: none;
+    }
+}
+/*
+Publisher Sticky Banners FIX CSS
+END
+*/

@@ -1,0 +1,25 @@
+/**
+ * Выделение категории в админке при редактировании поста
+ */
+li#category-9783{
+    background-color: red !important;
+    color: white !important;
+    font-weight: bold !important;
+}
+
+/*
+Удаляем оповещение Yoast Duplicator Post
+ */
+div#duplicate-post-notice.notice.is-dismissible {
+    display: none !important;
+}
+
+/**
+Окно редактора обложки
+ */
+div#TB_window {
+    z-index: 9999 !important;
+}
+div#TB_overlay {
+    z-index: 999;
+}

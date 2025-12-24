@@ -152,10 +152,10 @@ Tabs
  */
 #rama-tabs-lists-and-posts-conteiner .h-text,
 #rama-tabs-lists-and-posts-conteiner .h-text:before{
-    background-color: rgb(218, 16, 19) !important;
+    background-color: #bc0505 !important;
 }
 #rama-tabs-lists-and-posts-conteiner .responsive-tabs .responsive-tabs__heading--active {
-    color: rgb(218, 16, 19) !important;
+    color: #bc0505 !important;
 }
 
 
@@ -166,7 +166,7 @@ Tabs
 }
 
 .responsive-tabs .responsive-tabs__list__item--active{
-    color:rgb(218, 16, 19);
+    color:#bc0505;
     font-weight: 600;
 }
 
@@ -213,7 +213,7 @@ body.home .bs-tab-shortcode li.active a {
 /* Bloggers */
 
 #rama-best-bloggers .listing-item-user.type-2 .btn-light {
-    border-color: rgb(218, 16, 19);
+    border-color: #bc0505;
 }
 #rama-best-bloggers .listing-item-user .user-avatar img {
     width: 60px !important;

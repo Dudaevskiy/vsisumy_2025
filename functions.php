@@ -6,7 +6,7 @@ require_once get_stylesheet_directory( ) . '/content-project.php';
 /***
  * SDStudio-WP_All_Import-Fixes.php
  */
-require_once(get_stylesheet_directory() . '/sds-child-theme-fixes/SDStudio-WP_All_Import-Fixes.php');
+//require_once(get_stylesheet_directory() . '/sds-child-theme-fixes/SDStudio-WP_All_Import-Fixes.php');
 
 
 
@@ -522,179 +522,199 @@ add_action('init', function () {
 }, 100); // <- важливо: пізній пріоритет
 
 
+
+
 /**
- * Автоматична міграція categories_main → таксономія company_categories
- *
- * Обробляє мета поле 'categories_main' для типів постів:
- * - sumy_company (компанії)
- * - company_articles (статті компаній)
- *
- * Формат categories_main: "Батько > Дитина; Батько2 > Дитина2 > Онук"
- * Створює ієрархічні терміни та призначає їх постам (тільки російська мова)
- 
-add_action('init', 'vsesumy_migrate_categories_main_to_taxonomy', 999);
-function vsesumy_migrate_categories_main_to_taxonomy() {
-    // Перевірити чи міграція вже виконана
-    $migration_done = get_option('vsesumy_categories_main_migrated', false);
-    if ($migration_done) {
-        // return; // Міграція вже виконана
-    }
-
-    // Логування початку міграції
-    error_log('=== ПОЧАТОК МІГРАЦІЇ categories_main → company_categories taxonomy ===');
-
-    // Типи постів для обробки
-    $post_types = array('sumy_company', 'company_articles');
-    $taxonomy = 'company_categories'; // Назва таксономії (JetEngine)
-
-    $stats = array(
-        'total_posts' => 0,
-        'posts_with_categories' => 0,
-        'terms_created' => 0,
-        'terms_assigned' => 0,
-        'errors' => 0
-    );
-
-    // Перебрати кожен тип поста
-    foreach ($post_types as $post_type) {
-        // Отримати всі пости цього типу (тільки російською)
-        $args = array(
-            'post_type' => $post_type,
-            'posts_per_page' => -1,
-            'post_status' => 'any',
-            'lang' => 'ru', // WPML: тільки російська мова
-            'suppress_filters' => false // Важливо для WPML
-        );
-
-        $posts = get_posts($args);
-        $stats['total_posts'] += count($posts);
-
-        error_log("Знайдено {$post_type}: " . count($posts) . " постів");
-
-        foreach ($posts as $post) {
-            // Отримати мета поле categories_main
-            $categories_main = get_post_meta($post->ID, 'categories_main', true);
-
-            if (empty($categories_main)) {
-                continue; // Немає категорій - пропускаємо
-            }
-
-            $stats['posts_with_categories']++;
-
-            // Розбити по сепаратору ";" (крапка з комою)
-            $category_strings = explode(';', $categories_main);
-
-            $term_ids_to_assign = array();
-
-            foreach ($category_strings as $category_string) {
-                $category_string = trim($category_string);
-                if (empty($category_string)) {
-                    continue;
-                }
-
-                // Розбити по сепаратору " > " (батько > дитина > онук)
-                $hierarchy_parts = array_map('trim', explode('>', $category_string));
-
-                // Обробити ієрархію: створити терміни зверху вниз
-                $parent_id = 0;
-                $current_lang = 'ru'; // WPML: російська мова
-
-                foreach ($hierarchy_parts as $index => $term_name) {
-                    if (empty($term_name)) {
-                        continue;
-                    }
-
-                    // Перевірити чи термін вже існує (з урахуванням батька і мови)
-                    $existing_term = vsesumy_find_term_by_name_and_parent($term_name, $taxonomy, $parent_id, $current_lang);
-
-                    if ($existing_term) {
-                        // Термін існує
-                        $term_id = $existing_term->term_id;
-                    } else {
-                        // Створити новий термін
-                        $term_data = wp_insert_term(
-                            $term_name,
-                            $taxonomy,
-                            array(
-                                'parent' => $parent_id,
-                                'slug' => sanitize_title($term_name)
-                            )
-                        );
-
-                        if (is_wp_error($term_data)) {
-                            error_log("Помилка створення терміну '{$term_name}': " . $term_data->get_error_message());
-                            $stats['errors']++;
-                            continue;
-                        }
-
-                        $term_id = $term_data['term_id'];
-                        $stats['terms_created']++;
-
-                        // WPML: Призначити мову терміну
-                        if (function_exists('pll_set_term_language')) {
-                            pll_set_term_language($term_id, $current_lang);
-                        }
-
-                        error_log("Створено термін: {$term_name} (ID: {$term_id}, Parent: {$parent_id})");
-                    }
-
-                    // Наступний термін буде дитиною поточного
-                    $parent_id = $term_id;
-
-                    // Зберегти ID ВСІХ термінів в ієрархії для призначення (включаючи батьківські)
-                    $term_ids_to_assign[] = $term_id;
-                }
-            }
-
-            // Призначити всі терміни посту
-            if (!empty($term_ids_to_assign)) {
-                $result = wp_set_object_terms($post->ID, $term_ids_to_assign, $taxonomy, false);
-
-                if (is_wp_error($result)) {
-                    error_log("Помилка призначення термінів для поста {$post->ID}: " . $result->get_error_message());
-                    $stats['errors']++;
-                } else {
-                    $stats['terms_assigned'] += count($term_ids_to_assign);
-                    error_log("Призначено " . count($term_ids_to_assign) . " термінів для поста {$post->ID} ({$post->post_title})");
-                }
-            }
-        }
-    }
-
-    // Позначити міграцію як виконану
-    update_option('vsesumy_categories_main_migrated', true);
-
-    // Логування статистики
-    error_log('=== МІГРАЦІЯ ЗАВЕРШЕНА ===');
-    error_log("Всього постів оброблено: {$stats['total_posts']}");
-    error_log("Постів з categories_main: {$stats['posts_with_categories']}");
-    error_log("Термінів створено: {$stats['terms_created']}");
-    error_log("Термінів призначено: {$stats['terms_assigned']}");
-    error_log("Помилок: {$stats['errors']}");
-    error_log('==============================');
-}
-*/
-/**
- * Helper функція: знайти термін по імені, батьку та мові
-
-function vsesumy_find_term_by_name_and_parent($term_name, $taxonomy, $parent_id, $lang = 'ru') {
-    $args = array(
-        'taxonomy' => $taxonomy,
-        'name' => $term_name,
-        'parent' => $parent_id,
-        'hide_empty' => false,
-        'lang' => $lang // WPML
-    );
-
-    $terms = get_terms($args);
-
-    if (!empty($terms) && !is_wp_error($terms)) {
-        return $terms[0];
-    }
-
-    return false;
-}
+ * =====================================================
+ * ПРИМУСОВЕ ВІДКЛЮЧЕННЯ GUTENBERG (БЛОЧНОГО РЕДАКТОРА)
+ * =====================================================
+ * 
+ * Цей код повністю відключає редактор Gutenberg та примусово
+ * використовує класичний редактор для всіх типів постів.
+ * 
+ * ВАЖЛИВО: Додавайте цей код в кінець файлу functions.php
+ * вашої дочірньої теми (child theme). Якщо додасте в батьківську
+ * тему - код зникне після оновлення теми.
  */
+
+// =====================================================
+// 1. ВІДКЛЮЧЕННЯ GUTENBERG ДЛЯ ОКРЕМИХ ПОСТІВ
+// =====================================================
+/**
+ * Відключає блоковий редактор (Gutenberg) для всіх постів
+ * 
+ * Цей фільтр спрацьовує кожен раз, коли WordPress вирішує,
+ * який редактор використовувати для конкретного посту.
+ * 
+ * @param bool $use_block_editor Чи використовувати блоковий редактор
+ * @return bool Завжди повертає false (не використовувати)
+ */
+add_filter('use_block_editor_for_post', '__return_false', 10);
+
+
+// =====================================================
+// 2. ВІДКЛЮЧЕННЯ GUTENBERG ДЛЯ ТИПІВ ПОСТІВ
+// =====================================================
+/**
+ * Відключає блоковий редактор для всіх типів контенту
+ * (пости, сторінки, custom post types)
+ * 
+ * Цей фільтр контролює доступність Gutenberg на рівні
+ * типів постів, а не окремих записів.
+ * 
+ * Пріоритет 10 - стандартний, але можна збільшити до 99,
+ * якщо інші плагіни конфліктують
+ * 
+ * @param bool $use_block_editor Чи використовувати блоковий редактор
+ * @return bool Завжди повертає false
+ */
+add_filter('use_block_editor_for_post_type', '__return_false', 10);
+
+
+// =====================================================
+// 3. ДОДАТКОВЕ ВІДКЛЮЧЕННЯ (якщо перші два не спрацювали)
+// =====================================================
+/**
+ * Альтернативний метод відключення Gutenberg
+ * 
+ * Використовується як резервний варіант, якщо перші
+ * два фільтри з якоїсь причини не спрацювали
+ */
+add_filter('gutenberg_can_edit_post_type', '__return_false', 10);
+
+
+// =====================================================
+// 4. ВИДАЛЕННЯ GUTENBERG CSS/JS З ФРОНТЕНДУ
+// =====================================================
+/**
+ * Видаляє CSS стилі Gutenberg з frontend частини сайту
+ * 
+ * Це зменшує розмір сторінки та час завантаження,
+ * оскільки стилі блокового редактора не потрібні,
+ * якщо ви його не використовуєте
+ */
+function remove_gutenberg_styles() {
+    // wp-block-library - основна бібліотека стилів блоків
+    wp_dequeue_style('wp-block-library');
+    
+    // wp-block-library-theme - тематичні стилі блоків
+    wp_dequeue_style('wp-block-library-theme');
+    
+    // global-styles - глобальні стилі WordPress 5.9+
+    wp_dequeue_style('global-styles');
+}
+// Спрацьовує на frontend під час завантаження стилів
+add_action('wp_enqueue_scripts', 'remove_gutenberg_styles', 100);
+
+
+// =====================================================
+// 5. ВІДКЛЮЧЕННЯ GUTENBERG ВІДЖЕТІВ (WordPress 5.8+)
+// =====================================================
+/**
+ * Повертає класичний редактор віджетів
+ * 
+ * Починаючи з WordPress 5.8, віджети також використовують
+ * блоковий редактор. Це відключає його для віджетів.
+ */
+add_filter('use_widgets_block_editor', '__return_false');
+
+
+// =====================================================
+// 6. ПОВЕРНЕННЯ КЛАСИЧНОГО РЕДАКТОРА ДЛЯ ВСІХ КОРИСТУВАЧІВ
+// =====================================================
+/**
+ * Примусово встановлює класичний редактор для всіх користувачів
+ * 
+ * Ця функція перевіряє і встановлює мета-дані користувача,
+ * які контролюють, який редактор відображається за замовчуванням
+ */
+function force_classic_editor_for_users() {
+    // Отримуємо ID поточного користувача
+    $user_id = get_current_user_id();
+    
+    // Якщо користувач не авторизований - виходимо
+    if (!$user_id) {
+        return;
+    }
+    
+    // Перевіряємо поточне налаштування користувача
+    $classic_editor_preference = get_user_meta($user_id, 'classic-editor-settings', true);
+    
+    // Якщо налаштування ще не встановлено або встановлено неправильно
+    if ($classic_editor_preference !== 'classic-editor') {
+        // Встановлюємо класичний редактор як налаштування за замовчуванням
+        update_user_meta($user_id, 'classic-editor-settings', 'classic-editor');
+    }
+}
+// Запускаємо при завантаженні адмінки
+add_action('admin_init', 'force_classic_editor_for_users');
+
+
+// =====================================================
+// 7. ВИДАЛЕННЯ GUTENBERG З АДМІНКИ (ОПЦІОНАЛЬНО)
+// =====================================================
+/**
+ * Повністю видаляє Gutenberg скрипти з адмінпанелі
+ * 
+ * УВАГА: Розкоментуйте цей блок тільки якщо перші методи
+ * не допомогли. Це агресивний метод, який може конфліктувати
+ * з деякими плагінами.
+ */
+/*
+function remove_gutenberg_admin_scripts() {
+    wp_dequeue_script('wp-block-editor');
+    wp_dequeue_script('wp-block-library');
+    wp_dequeue_script('wp-blocks');
+    wp_dequeue_script('wp-edit-post');
+}
+add_action('admin_enqueue_scripts', 'remove_gutenberg_admin_scripts', 100);
+*/
+
+
+// =====================================================
+// 8. ЛОГУВАННЯ ДЛЯ ВІДЛАГОДЖЕННЯ (ОПЦІОНАЛЬНО)
+// =====================================================
+/**
+ * Записує в лог, який редактор використовується
+ * 
+ * Розкоментуйте цей блок для діагностики проблеми.
+ * Лог буде записаний у файл /wp-content/debug.log
+ * (переконайтесь що WP_DEBUG_LOG увімкнено в wp-config.php)
+ */
+/*
+function log_editor_type($use_block_editor) {
+    error_log('Editor type check: ' . ($use_block_editor ? 'Gutenberg' : 'Classic'));
+    return $use_block_editor;
+}
+add_filter('use_block_editor_for_post', 'log_editor_type', 1);
+*/
+
+
+// =====================================================
+// 4. ПРИМУСОВА УСТАНОВКА КЛАСИЧНОГО РЕДАКТОРА ДЛЯ ПОСТІВ
+// =====================================================
+/**
+ * При відкритті поста примусово встановлює класичний редактор
+ */
+function force_classic_editor_for_posts_only($post) {
+    if ($post && $post->post_type === 'post') {
+        // Видаляємо прапорці WPBakery
+        delete_post_meta($post->ID, '_wpb_vc_js_status');
+        delete_post_meta($post->ID, 'vcv-be-editor');
+    }
+}
+add_action('edit_form_top', 'force_classic_editor_for_posts_only');
+
+// Вимкнути WPML Translation Editor - відкривати переклади у WordPress редакторі
+add_filter('wpml_use_tm_editor', '__return_false');
+
+
+
+
+
+
+
+
 
 
 /***

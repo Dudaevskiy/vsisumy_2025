@@ -5,25 +5,46 @@
  *
  * Слайдер находится здесь:
  * themes/vsisumy_2025/views/general/loop/listing-modern-grid-1.php
+ *
+ * WPML Support:
+ * UK: 30779, RU: 30781, EN: 30780
  */
 
+/**
+ * Получаем ID категории "ТОП Новина" в зависимости от текущего языка WPML
+ */
+function rama_get_top_news_category_id() {
+    // ID категорий для каждого языка
+    $category_ids = array(
+        'uk' => 30779,
+        'ru' => 30781,
+        'en' => 30780,
+    );
 
+    // Получаем текущий язык WPML
+    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'uk';
+
+    // Возвращаем ID категории для текущего языка или UK по умолчанию
+    return isset($category_ids[$current_lang]) ? $category_ids[$current_lang] : $category_ids['uk'];
+}
 
 function rama_top_news_slider() {
 
-    // Получаем IDs постов в категории (далее будем их сравнивать с транзищен кешем)
-    $term_id = 9783; // ТОП Тема -> ID
+    // Получаем ID категории в зависимости от языка WPML
+    $term_id = rama_get_top_news_category_id();
+
     $ids = get_posts( array(
         'cat' => $term_id,
         'post_type' => 'post',
-        'pages_per_post' => -1,
+        'posts_per_page' => -1,
+        'suppress_filters' => false, // Важно для WPML
     ) );
     $ids = wp_list_pluck( $ids, 'ID' );
     $ids = join(',',$ids);
 
     // Кешируем данные Query https://bit.ly/2XOhoj1
-//        $cache_key = 'cache_template__rama_top_news'.$ids;
-    $cache_key = 'cache_template__rama_top_news';
+    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'uk';
+    $cache_key = 'cache_template__rama_top_news_' . $current_lang;
 
 
 
@@ -36,13 +57,7 @@ function rama_top_news_slider() {
     //        $html_template = '<div class="mg-row mg-row-1">';
     $html_template = '<article class="post-{$post_id} type-post format-standard has-post-thumbnail listing-item-2 listing-item listing-mg-item listing-mg-type-1 listing-mg-1-item main-term-9">';
     $html_template .= '<div class="item-content">';
-    $html_template .= '<a title="{$post_title}"';
-    //        $html_template .= 'data-bs-srcset="{&quot;baseurl&quot;:&quot;https:\/\/rama.com.ua\/wp-content\/uploads\/2021\/09\/&quot;,&quot;sizes&quot;:{&quot;210&quot;:&quot;gaz-1-210x136.jpg&quot;,&quot;279&quot;:&quot;gaz-1-279x220.jpg&quot;,&quot;357&quot;:&quot;gaz-1-357x210.jpg&quot;,&quot;750&quot;:&quot;gaz-1-750x430.jpg&quot;,&quot;1200&quot;:&quot;gaz-1.jpg&quot;}}"';
-    $html_template .= 'data-bs-srcset="{$post_image_urls}"';
-    $html_template .= 'class="img-cont b-loaded"';
-    //        $html_template .= '{$post_url}"';
-    //        $html_template .= 'style="background-image: url(https://rama.com.ua/wp-content/uploads/2021/09/gaz-1-357x210.jpg);"></a>';
-    $html_template .= 'style="background-image: url({$post_image_url_medium});"></a>';
+    $html_template .= '<a href="{$post_url}" title="{$post_title}" class="img-cont b-loaded" style="background-image: url({$post_image_url_medium});"></a>';
 
     // foreach bredcreambs
     //$html_template .= '<div class="term-badges floated"><span class="term-badge term-9">';
@@ -77,9 +92,9 @@ function rama_top_news_slider() {
 
 
     /**
-     * 2️⃣ Получаем посты из категории "ТОП Новина"
+     * 2️⃣ Получаем посты из категории "ТОП Новина" (с учетом WPML)
      */
-    $term_id = 9783; // ТОП Новина -> ID
+    // $term_id уже получен выше через rama_get_top_news_category_id()
 
     $the_query = new WP_Query( array(
         'cat' => $term_id,
@@ -87,6 +102,7 @@ function rama_top_news_slider() {
         'post_status' => 'publish',
         'orderby' => 'date',
         'order' => 'DESC',
+        'suppress_filters' => false, // Важно для WPML
     ));
 
     $all_top_posts = '';

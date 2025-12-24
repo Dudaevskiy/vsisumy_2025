@@ -102,7 +102,7 @@ if (!function_exists('rama_last_history_posts_carusel')){
 
                 $html .= '<img src="'.$post_img_thumb[0].'" class="rama_history_post__img">';
                 $html .= '<div class="rama_history_post__title">'.$post_title.'</div>';
-                $html .= '<div class="rama_history_post__data" style="color: #da1013;">'.$post_data.'</div>';
+                $html .= '<div class="rama_history_post__data" style="color: #bc0505;">'.$post_data.'</div>';
 //                $html .= '<div class="rama_history_post__desc">'.$post_desc.'</div>';
 
                 $html .= '</a>';

@@ -22,22 +22,6 @@ function custom_meta_box_callback($post) {
 }
 
 
-function enqueue_color_picker($hook_suffix) {
-    // Підключити тільки на сторінці редагування постів
-    if ('post.php' != $hook_suffix && 'post-new.php' != $hook_suffix) {
-        return;
-    }
-
-    // Підключити color picker
-    wp_enqueue_style('wp-color-picker');
-    wp_enqueue_script('wp-color-picker');
-
-    // Додати власний скрипт для ініціалізації color picker
-    wp_enqueue_script('custom_color_picker_script', get_template_directory_uri() . '/js/custom_color_picker.js', array('wp-color-picker'), false, true);
-}
-add_action('admin_enqueue_scripts', 'enqueue_color_picker');
-
-
 function save_custom_meta_box_data($post_id) {
     // Перевірка nonce
     if (!isset($_POST['meta_box_nonce']) || !wp_verify_nonce($_POST['meta_box_nonce'], 'custom_meta_box_nonce')) {

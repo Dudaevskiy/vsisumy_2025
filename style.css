@@ -175,12 +175,12 @@ Tabs
     display: inline-flex;
 }
 .responsive-tabs .responsive-tabs__list__item--active{
-    color:#da1013;
+    color:#bc0505;
 }
 .btn-bs-pagination.next:not(:hover),
 .bs-slider-controls .btn-bs-pagination.next:not(:hover) {
-    border-color: #da1013;
-    color: #da1013 !important;
+    border-color: #bc0505;
+    color: #bc0505 !important;
 }
 .rama-last-posts .time {
     padding-right: 10px;
@@ -194,7 +194,7 @@ body.home .bs-tab-shortcode li a {
 }
 
 body.home .bs-tab-shortcode li.active a {
-    color:#da1013 !important;
+    color:#bc0505 !important;
 }
 /* Vievs */
 .counter.eye,
@@ -207,7 +207,7 @@ body.home .bs-tab-shortcode li.active a {
 .counter.eye i,
 .counter.comments i {
     padding-right: 5px;
-    color:#da1013;
+    color:#bc0505;
 }
 
 /* Bloggers */
@@ -267,7 +267,7 @@ p.section-heading * {
 }
 
 .active_years_badge {
-    background-color: #da1013 !important;
+    background-color: #bc0505 !important;
 }
 .archive-badges.term-badges.col-sm-4.months_archives span.archive-badge.term-badge a {
     min-width: 80px;
@@ -310,7 +310,7 @@ body.single-project .single-featured > a:hover:before{
     display: flex;
     background: rgba(0, 0, 0, 0.5); /* Black see-through */
     transition: .5s ease;
-    /*color: #da1013;*/
+    /*color: #bc0505;*/
     color: white;
     font-size: 50px;
     text-align:center;
@@ -483,7 +483,7 @@ span.flatpickr-next-month {
     color: black;
 }
 span.flatpickr-day.selected:hover {
-    background: #da1013;
+    background: #bc0505;
 }
 
 /*CATEGORY */
@@ -603,7 +603,7 @@ p.section-heading span.h-text {
 
 /* Shortcodes */
 .block.rama_widget_shortcode.last_annonces .all a {
-    color: #da1013;
+    color: #bc0505;
 }
 .block.rama_widget_shortcode.last_annonces .paper_title a {
     color: black;
@@ -637,13 +637,13 @@ p.section-heading span.h-text {
 /*    background-color: #E3EDF4;*/
 /*}*/
 .block.rama_widget_shortcode a:hover {
-    color: #da1013;
+    color: #bc0505;
     /*     background-color: #E3EDF4; */
 }
 
 
 .block.rama_widget_shortcode .all a{
-    color: #da1013;
+    color: #bc0505;
     text-align: right;
 }
 
@@ -691,7 +691,7 @@ p.section-heading span.h-text {
     text-transform: uppercase !important;
 }
 .listing-item-user .user-badge {
-    background: #da1013 !important;
+    background: #bc0505 !important;
 }
 
 
@@ -716,10 +716,10 @@ MENU
     .site-header.header-style-2 .main-menu.menu {
         height: 35px !important;
         margin-top:-7px  !important;
-        border-top: 2px #da10138c solid  !important;
+        border-top: 2px #bc05058c solid  !important;
     }
     .header-style-2.site-header.boxed .menu-action-buttons{
-        border-top: 2px #da10138c solid;
+        border-top: 2px #bc05058c solid;
         margin-right: -9px;
     }
 
@@ -754,14 +754,14 @@ MENU
     }
     .site-header .search-container .search-handler:hover,
     .site-header .off-canvas-menu-icon .off-canvas-menu-icon-el:hover{
-        color: #da1013 !important;
+        color: #bc0505 !important;
     }
 
     /*113*/
     nav.main-menu-container i.fa.fa-android,
     nav.main-menu-container i.fa.fa-apple {
         font-size: 22px !important;
-        color:#da1013 !important;
+        color:#bc0505 !important;
     }
     nav.main-menu-container a:hover i.fa.fa-android,
     nav.main-menu-container a:hover i.fa.fa-apple {
@@ -803,7 +803,7 @@ MENU
         background-image: url('/wp-content/themes/vsisumy_2025/img_svg/red_right_MIN_wh.svg');
         background-position: top right;
         background-size: 71px;
-        background-color:#da1013;
+        background-color:#bc0505;
         background-repeat: no-repeat;
         height: 35px;
     }
@@ -866,7 +866,7 @@ MENU
     .mega-links .menu-item:hover a{
         color:white !important;
         border-radius:0px !important;
-        background-color:#da1013 !important;
+        background-color:#bc0505 !important;
     }
     .mega-links>.menu-item {
         margin-bottom: 5px !important;
@@ -933,7 +933,7 @@ sub.last_author_post__data_time {
     left: 15px;
 }
 .last_post_wrap a.last_author_post__title {
-    color: #da1013;
+    color: #bc0505;
     font-weight: 500;
     padding-bottom: 15px;
 }
@@ -1250,8 +1250,8 @@ a.rama_view_all_audio,
 }
 a.rama_view_all_audio:hover,
 .top_blogers_link:hover a{
-    border-color: #da1013;
-    background-color: #da1013;
+    border-color: #bc0505;
+    background-color: #bc0505;
     color: #fff;
 }
 
@@ -1294,7 +1294,7 @@ https://bit.ly/3s8eaUu
     border-radius: 2px 0 0 2px;
 }
 .rama_top_news_slider a.btn-bs-pagination.bs-slider-arrow {
-    background-color: #da1013;
+    background-color: #bc0505;
     color: white !important;
     font-size: 20px !important;
     border: 2px white solid;
@@ -1489,7 +1489,7 @@ div.sds_slideshow_posts_carusel .progress{
     overflow: hidden;
     height: 10px;
     margin-bottom: -10px;
-    background-color: #da101370;
+    background-color: #bc050570;
     border-radius: 0px;
     margin-bottom:-10px;
 }
@@ -1520,7 +1520,7 @@ div.sds_slideshow_posts_carusel button:hover {
 }
 
 div.sds_slideshow_posts_carusel button{
-    background-color: #da1013;
+    background-color: #bc0505;
     color: white !important;
     font-size: 20px !important;
     border: 2px white solid;
@@ -1625,7 +1625,7 @@ button#next {
 }
 .textwidget.custom-html-widget .sds_slideshow_posts_carusel .all a,
 .widget.vc-widget .sds_slideshow_posts_carusel .all a{
-    color: #da1013;
+    color: #bc0505;
 }
 
 
@@ -1659,7 +1659,7 @@ rama-last-posts icons
  */
 .rama-last-posts .title .fa {
     padding-left:5px;
-    /*color:#da1013;*/
+    /*color:#bc0505;*/
 }
 
 /* Fix badge in posts */

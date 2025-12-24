@@ -33,7 +33,7 @@ function weather_tabs_shortcode($atts) {
         $html .= '<img src="' . $today_weather['day']['condition']['icon'] . '" alt="Weather icon" style="vertical-align: middle;">';
         $html .= '<p style="display: inline-block; margin: 0 10px;">' . $today_weather['day']['avgtemp_c'] . '°C</p>';
         $html .= '<p>' . $today_weather['day']['condition']['text'] . '</p>';
-        $html .= '<a href="/pogoda-v-sumah/" style="color: #da1013;">Дізнатись погоду на 7 днів</a>';
+        $html .= '<a href="/pogoda-v-sumah/" style="color: #bc0505;">Дізнатись погоду на 7 днів</a>';
         $html .= '</div>';
     } else {
 		 // Додаємо CSS стилі

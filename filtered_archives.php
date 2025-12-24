@@ -139,7 +139,7 @@ if (isset($get_year)) {
 //    print($current_year.' = '.$get_year);
     $styles_current_year = '';
     if ((int)$current_year == (int)$get_year){
-        $styles_current_year = 'style="background: #da1013 !important;color: white !important;"';
+        $styles_current_year = 'style="background: #bc0505 !important;color: white !important;"';
     }
 
     // Если есть категория
@@ -157,7 +157,7 @@ if (isset($get_year)) {
     while ($i <= $off_years) {
         $this_year = (int)$current_year - $i;
         if ($this_year == $get_year){
-            $styles_current_year = 'style="background: #da1013 !important;color: white !important;"';
+            $styles_current_year = 'style="background: #bc0505 !important;color: white !important;"';
         }
 
         $html_years .= '<span class="archive-badge term-badge"><a '.$styles_current_year.' href="https://rama.com.ua/arhiv-novin/?rama_dates='.$this_year.$cat_slug.'">'.$this_year.'</a></span>'."\n";
@@ -293,7 +293,7 @@ if (isset($_GET['rama_dates']) && !empty($_GET['rama_dates'])) {
 
             if ($posts_get_full > 0){
                 if (!empty($month) && (int)$month == $i) {
-                    $styles_active_month = 'style="background: #da1013 !important;color: white !important;"';
+                    $styles_active_month = 'style="background: #bc0505 !important;color: white !important;"';
                 }
                 $html .= '<span class="archive-badge term-badge"><a href="/arhiv-novin/?rama_dates=' . $year . '-' . $i .$cat_slug. '" ' . $styles_active_month . '>' . $month_text. '</a></span>' . "\n";
                 $styles_active_month = '';
@@ -338,7 +338,7 @@ if (isset($_GET['rama_dates']) && !empty($_GET['rama_dates'])) {
     $cats_get = isset($_GET['rama_cat']) ? sanitize_text_field($_GET['rama_cat']) : '';
     foreach ($cats as $key => $cat_title){
         if (!empty($cats_get) && $cats_get == $key) {
-            $styles_active_cat = 'style="background: #da1013 !important;color: white !important;"';
+            $styles_active_cat = 'style="background: #bc0505 !important;color: white !important;"';
         }
         if (isset($_GET['rama_dates']) && !empty($_GET['rama_dates'])){
             $html_cats .= '<span class="archive-badge term-badge"><a href="/arhiv-novin/?rama_dates='.esc_attr($_GET['rama_dates']).'&rama_cat=' . $key . '" ' . $styles_active_cat . '>' . $cat_title . '</a></span>' . "\n";
@@ -350,7 +350,7 @@ if (isset($_GET['rama_dates']) && !empty($_GET['rama_dates'])) {
     }
     $html_cats .= '</div>'."\n";
     // Выделяем пункт в меню
-    $html_cats .= '<style>li.rama_archives_parent {background:#da1013;}</style>';
+    $html_cats .= '<style>li.rama_archives_parent {background:#bc0505;}</style>';
 
     /**
      * flatpickr
@@ -564,7 +564,7 @@ if (!function_exists('ReternsDatesForDataPicker')){
     $rama_dates_get = isset($_GET['rama_dates']) ? $_GET['rama_dates'] : '';
     $date_parts_check = explode("-", $rama_dates_get);
     if (isset($date_parts_check[2])){
-        $cur_day_style = '<style>[data-data_day="'.esc_attr($rama_dates_get).'"]{background:#da1013 !important; color:white !important;}</style>';
+        $cur_day_style = '<style>[data-data_day="'.esc_attr($rama_dates_get).'"]{background:#bc0505 !important; color:white !important;}</style>';
     }
     // Обработка заголовка
     $title_head = $rama_dates_get;

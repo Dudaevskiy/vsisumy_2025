@@ -669,9 +669,12 @@ add_action('wp_loaded', function() {
         );
 
         // Democracy Poll - переклад votes/vote на українську
-        // Множина (12 votes, 3 votes, тощо)
+        // Заміна тексту всередині <span class="votxt">votes</span>
+        $html = str_replace('<span class="votxt">votes</span>', '<span class="votxt">голосів</span>', $html);
+        $html = str_replace('<span class="votxt">vote</span>', '<span class="votxt">голос</span>', $html);
+
+        // Додатково: заміна для випадків без span (якщо є)
         $html = preg_replace('/(\d+)\s+votes/', '$1 голосів', $html);
-        // Однина (1 vote)
         $html = preg_replace('/(\d+)\s+vote([^s])/', '$1 голос$2', $html);
         $html = preg_replace('/(\d+)\s+vote$/', '$1 голос', $html);
 

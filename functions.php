@@ -655,18 +655,26 @@ add_action('admin_init', 'force_classic_editor_for_users');
  */
 add_action('wp_loaded', function() {
     ob_start(function($html) {
-        // Заміна aria-label
+        // Заміна aria-label для WPML
         $html = str_replace(
             'aria-label="Перемкнути на Russian"',
             'aria-label="Перемкнути на мову окупантів"',
             $html
         );
-        // Заміна title
+        // Заміна title для WPML
         $html = str_replace(
             'title="Перемкнути на Russian"',
             'title="Перемкнути на мову окупантів"',
             $html
         );
+
+        // Democracy Poll - переклад votes/vote на українську
+        // Множина (12 votes, 3 votes, тощо)
+        $html = preg_replace('/(\d+)\s+votes/', '$1 голосів', $html);
+        // Однина (1 vote)
+        $html = preg_replace('/(\d+)\s+vote([^s])/', '$1 голос$2', $html);
+        $html = preg_replace('/(\d+)\s+vote$/', '$1 голос', $html);
+
         return $html;
     });
 });

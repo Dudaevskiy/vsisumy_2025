@@ -101,48 +101,56 @@ function rama_last_posts($atts)
     if ($atts['last'] == "true") {
         // Кешируем данные https://bit.ly/2XOhoj1
         $cache_key = 'cache_query__last_posts';
-//ddd(!get_transient( $cache_key ));
-//        if ( !$html = get_transient( $cache_key ) ) {
-        if ( !get_transient( $cache_key ) ) {
+
+        $cached_html = get_transient( $cache_key );
+        // Перевіряємо чи кеш валідний (не порожній і містить пости)
+        if ( false === $cached_html || empty($cached_html) || strpos($cached_html, '<div class="new">') === false ) {
             // =============================
             date_default_timezone_set('Europe/Kiev');
-            $args = array('posts_per_page' => -1, 'cat' => $exclude_cat_id, 'suppress_filters' => 0);
 
-//            // The Query
-//            $args = array(
-////                'post_type' => 'post',
-//                'post_type' => array('post','audiopodkasty'),
-//                'post_status' => 'publish',
-//                'posts_per_page' => $number,
-////                'orderby' => 'ID',
-//                'orderby' => 'publish_date',
-//                'order' => 'DESC',
-//                'cat' => $exclude_cat_id,
-//                // cache
-//                'cache_wp_query' => true,
-//                'suppress_filters' => 0
-//            );
-//
-//            $query = new WP_Query($args);
             /***
              * FIX sticky_posts START
              */
             $sticky_posts = get_option('sticky_posts');
-            $number = 20;
-            $args = array(
+            if (!is_array($sticky_posts)) {
+                $sticky_posts = array();
+            }
+
+            // Отримуємо звичайні пости (не закріплені)
+            $regular_posts = get_posts(array(
                 'post_type' => array('post', 'audiopodkasty'),
                 'post_status' => 'publish',
                 'posts_per_page' => $number,
-                'orderby' => 'post__in',
-                'post__in' => array_merge($sticky_posts, get_posts(array(
+                'post__not_in' => $sticky_posts,
+                'cat' => $exclude_cat_id,
+                'fields' => 'ids',
+                'orderby' => 'date',
+                'order' => 'DESC',
+            ));
+
+            // Об'єднуємо закріплені та звичайні пости
+            $all_post_ids = array_merge($sticky_posts, $regular_posts);
+
+            // Якщо є пости для відображення
+            if (!empty($all_post_ids)) {
+                $args = array(
                     'post_type' => array('post', 'audiopodkasty'),
                     'post_status' => 'publish',
                     'posts_per_page' => $number,
-                    'post__not_in' => $sticky_posts, // Виключити закріплені пости
-                    'fields' => 'ids', // Отримати лише ID
-                ))),
-                'cat' => $exclude_cat_id,
-            );
+                    'orderby' => 'post__in',
+                    'post__in' => $all_post_ids,
+                );
+            } else {
+                // Fallback - просто отримуємо останні пости
+                $args = array(
+                    'post_type' => array('post', 'audiopodkasty'),
+                    'post_status' => 'publish',
+                    'posts_per_page' => $number,
+                    'orderby' => 'date',
+                    'order' => 'DESC',
+                    'cat' => $exclude_cat_id,
+                );
+            }
             $query = new WP_Query($args);
             /***
              * FIX sticky_posts END
@@ -215,20 +223,17 @@ function rama_last_posts($atts)
             endwhile;
 
             $html .= '</div>';
-            // wp_reset_postdata();
-            // return $html;
-            // =============================
-            // $html = ob_get_clean();
+            wp_reset_postdata();
 
-            // Кешируем в временную опцию https://bit.ly/39CeoJd
-            set_transient( $cache_key, $html, 24 * HOUR_IN_SECONDS );
+            // Кешуємо тільки якщо є пости (не порожній результат)
+            if ( strpos($html, '<div class="new">') !== false ) {
+                set_transient( $cache_key, $html, 24 * HOUR_IN_SECONDS );
+            }
 
             return $html;
         } else {
-            // Если PHP кеш есть, просто вернем HTML
-            $cache_key = 'cache_query__last_posts';
-            $html = get_transient( $cache_key );
-            return $html;
+            // Якщо кеш є, повертаємо HTML
+            return $cached_html;
         }
     }
 
@@ -242,15 +247,14 @@ function rama_last_posts($atts)
 
         if ( !$html = get_transient( $cache_key ) ) {
             // =============================
-            // The Query
+            // The Query - сортування по даті публікації (останні зверху)
             $args = array(
                 'post_type' => 'post',
                 'post_status' => 'publish',
                 'posts_per_page' => $number,
                 'order' => 'DESC',
+                'orderby' => 'date',
                 'cat' => $exclude_cat_id,
-                'meta_key' => 'views',
-                'orderby' => 'meta_value_num',
                 // cache
                 'cache_wp_query' => true,
                 'suppress_filters' => 0
@@ -264,13 +268,13 @@ function rama_last_posts($atts)
                 $html .= '<div class="new">';
                 global $post;
 
-                $id = $post->ID;
-                $get_meta = get_post_meta($id);
-                $vievs_count = $get_meta['views'][0];
+                $full_date = $post->post_date;
+                $full_date = explode(' ', $full_date)[0];
+                $date_month = explode('-', $full_date)[1];
+                $date_day = explode('-', $full_date)[2];
+                $date_for_print = $date_day . '.' . $date_month;
 
-                $vievs_count = number_format_short((int)$vievs_count); // округляем
-
-                $html .= '<div class="counter eye"><i class="fa fa-eye"></i>' . $vievs_count . "</div>";
+                $html .= '<div class="counter date"><i class="fa fa-calendar"></i>' . $date_for_print . "</div>";
                 $html .= '<div class="title hyphenate"><a href="' . $post->guid . '">' . $post->post_title . '</a></div>';
 
                 $html .= '<div class="clear"></div>';
@@ -298,6 +302,8 @@ function rama_last_posts($atts)
 
     /**
      * COMMENTS
+     * Сортування за мета-полем comment_count (перенесені коментарі з rama.com.ua)
+     * Включає пости з мета-полем і без нього (з fallback на 0)
      */
     if ($comments == "true") {
         // Кешируем данные https://bit.ly/2XOhoj1
@@ -305,15 +311,29 @@ function rama_last_posts($atts)
 
         if ( !$html = get_transient( $cache_key ) ) {
             // =============================
-            // The Query
+            // Сортуємо за мета-полем comment_count (включаючи пости без мета-поля)
             $args = array(
                 'post_type' => 'post',
                 'post_status' => 'publish',
                 'posts_per_page' => $number,
-                'order' => 'DESC',
                 'cat' => $exclude_cat_id,
-    //            'meta_key' => 'views',
-                'orderby' => 'comment_count',
+                'meta_query' => array(
+                    'relation' => 'OR',
+                    // Пости з мета-полем comment_count
+                    'has_comments' => array(
+                        'key' => 'comment_count',
+                        'compare' => 'EXISTS',
+                        'type' => 'NUMERIC',
+                    ),
+                    // Пости без мета-поля (будуть внизу)
+                    'no_comments' => array(
+                        'key' => 'comment_count',
+                        'compare' => 'NOT EXISTS',
+                    ),
+                ),
+                'orderby' => array(
+                    'has_comments' => 'DESC',
+                ),
                 // cache
                 'cache_wp_query' => true,
                 'suppress_filters' => 0
@@ -328,8 +348,17 @@ function rama_last_posts($atts)
                 global $post;
 
                 $id = $post->ID;
-                $get_meta = get_post_meta($id);
-                $comment_count = number_format_short((int)$post->comment_count); // округляем
+
+                // Спочатку перевіряємо мета-поле comment_count
+                $meta_comment_count = get_post_meta($id, 'comment_count', true);
+                if (!empty($meta_comment_count) && (int)$meta_comment_count > 0) {
+                    $comment_count_raw = (int)$meta_comment_count;
+                } else {
+                    // Якщо мета-поле порожнє, беремо стандартний comment_count
+                    $comment_count_raw = (int)$post->comment_count;
+                }
+
+                $comment_count = number_format_short($comment_count_raw); // округляем
 
                 $html .= '<div class="counter comments"><i class="fa fa-comments"></i>' . $comment_count . "</div>";
                 $html .= '<div class="title hyphenate"><a href="' . $post->guid . '">' . $post->post_title . '</a></div>';
@@ -340,9 +369,6 @@ function rama_last_posts($atts)
 
             $html .= '</div>';
             wp_reset_postdata();
-            return $html;
-            // =============================
-            // $html = ob_get_clean();
 
             // Кешируем в временную опцию https://bit.ly/39CeoJd
             set_transient( $cache_key, $html, 24 * HOUR_IN_SECONDS );

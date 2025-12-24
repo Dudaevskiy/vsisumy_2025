@@ -78,12 +78,9 @@ function print_jQuery(){
         // Добавляем свои настройки
         $rl .="
 
-        // Inicialize
+        // Inicialize - Lightbox для галерей та зображень (працює на всіх сторінках)
         jQuery(document).ready(function($){
-        if (jQuery('body').hasClass('home')){
-            return false;
-        };
-                    jQuery('a[rel=\"lightbox\"],a[rel^=\"attachment\"],a[data-rel^=\"attachment-\"], [data-rel^=\"lightbox\"], .nivo-lightbox-content, body.single-announce .single-featured > a, body.single-kalendar_istor_podiy .single-featured > a, body.single-project .single-featured > a').nivoLightbox({
+                    jQuery('a[rel=\"lightbox\"], a[rel^=\"attachment\"], a[data-rel^=\"attachment-\"], [data-rel^=\"lightbox\"], .nivo-lightbox-content, .gallery a[href*=\".jpg\"], .gallery a[href*=\".jpeg\"], .gallery a[href*=\".png\"], .gallery a[href*=\".gif\"], .gallery a[href*=\".webp\"], body.single-announce .single-featured > a, body.single-kalendar_istor_podiy .single-featured > a, body.single-project .single-featured > a').nivoLightbox({
 
                       // The effect to use when showing the lightbox
                       // fade, fadeScale, slideLeft, slideRight, slideUp, slideDown, fall

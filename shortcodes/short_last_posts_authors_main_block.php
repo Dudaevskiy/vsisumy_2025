@@ -21,7 +21,131 @@ if (!function_exists('short_last_posts_authors_main_block')) {
             return false;
         }
 
+        // Атрибути шорткоду
+        $atts = shortcode_atts(array(
+            'first_bloger' => null,
+            'blogs' => null,  // Новий атрибут для отримання записів типу 'blogs'
+        ), $atts);
+
 //        ddd($atts['first_bloger']);
+
+        /**
+         * НОВИЙ ФУНКЦІОНАЛ: Отримання авторів з CPT 'blogs'
+         * Сортування по мета-полю 'author_display_name'
+         * Використання: [short_last_posts_authors_main_block blogs="true"]
+         */
+        if (!empty($atts['blogs']) && $atts['blogs'] === 'true') {
+            // Отримуємо багато записів з CPT 'blogs' щоб знайти 3 УНІКАЛЬНИХ авторів
+            // suppress_filters => 0 для підтримки WPML
+            $args = array(
+                'post_type' => 'blogs',
+                'post_status' => 'publish',
+                'posts_per_page' => 100,  // Беремо більше щоб знайти унікальних авторів
+                'order' => 'DESC',
+                'orderby' => 'date',
+                'suppress_filters' => 0  // Підтримка WPML - фільтрує по поточній мові
+            );
+
+            $query = new WP_Query($args);
+            wp_reset_postdata();
+
+            // DEBUG: Якщо немає постів
+            if (empty($query->posts) || !$query->have_posts()) {
+                return '<!-- No blogs found -->';
+            }
+
+            // Збираємо 3 УНІКАЛЬНИХ авторів (по author_display_name)
+            $unique_authors = array();
+            $blogs_to_show = array();
+
+            foreach ($query->posts as $blog_post) {
+                $post_id = $blog_post->ID;
+                $author_name = get_post_meta($post_id, 'author_display_name', true);
+
+                // Пропускаємо якщо немає імені автора
+                if (empty($author_name)) {
+                    continue;
+                }
+
+                // Пропускаємо якщо цей автор вже є
+                if (in_array($author_name, $unique_authors)) {
+                    continue;
+                }
+
+                // Додаємо автора і його пост
+                $unique_authors[] = $author_name;
+                $blogs_to_show[] = array(
+                    'post' => $blog_post,
+                    'author_name' => $author_name
+                );
+
+                // Зупиняємось коли маємо 3 унікальних авторів
+                if (count($unique_authors) >= 3) {
+                    break;
+                }
+            }
+
+            // Якщо немає авторів з author_display_name
+            if (empty($blogs_to_show)) {
+                return '<!-- No blogs with author_display_name found -->';
+            }
+
+            // Генеруємо HTML
+            $html = '<div class="listing listing-user type-2 style-1 columns-3 clearfix">';
+            $html .= '<div class="block rama_widget_shortcode textwidget">';
+            $html .= '<div class="bs-tab-shortcode">';
+            $html .= '<div class="tab-content">';
+            $html .= '<div class="rama-last-posts_for_main">';
+
+            // Заглушка для фото автора
+            $photo_empty = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ccircle cx='50' cy='35' r='20' fill='%23999'/%3E%3Cellipse cx='50' cy='85' rx='35' ry='25' fill='%23999'/%3E%3C/svg%3E";
+
+            foreach ($blogs_to_show as $blog_data) {
+                $blog_post = $blog_data['post'];
+                $author_name = $blog_data['author_name'];
+                $post_id = $blog_post->ID;
+
+                // Дані поста
+                $post_url = get_permalink($post_id);
+                $post_title = $blog_post->post_title;
+
+                // Excerpt
+                $post_excerpt = $blog_post->post_excerpt;
+                if (empty($post_excerpt)) {
+                    $post_excerpt = wp_strip_all_tags($blog_post->post_content);
+                }
+                $post_excerpt = mb_strimwidth($post_excerpt, 0, 80, '...');
+
+                $post_date = get_the_date('d.m.Y', $post_id);
+
+                $html .= '<div class="listing-item listing-item-user type-2 style-1 clearfix">';
+                $html .= '<div class="bs-user-item">';
+                // Фото - завжди заглушка (бо фото автора немає в меті)
+                $html .= '<a class="user_photo" href="' . esc_url($post_url) . '"><img data-src="' . esc_attr($photo_empty) . '" class="photo img-holder" width="50" height="50"></a>';
+                $html .= '<div class="details">';
+                // ФІО автора жирним
+                $html .= '<div class="name"><strong style="font-size:13px;">' . esc_html($author_name) . '</strong></div>';
+                $html .= '</div>';
+                $html .= '<div class="last_post_wrap">';
+                $html .= '<a href="' . esc_url($post_url) . '" class="last_author_post__title">' . esc_html($post_title) . '</a>';
+                $html .= '<span class="last_author_post__desc">' . esc_html($post_excerpt) . '</span>';
+                $html .= '<sub class="last_author_post__data_time"><b>' . esc_html($post_date) . '</b></sub>';
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= '</div>';
+            }
+
+            $html .= '</div>';
+            $html .= '</div>';
+            $html .= '</div>';
+            $html .= '</div>';
+
+            $html .= '<div class="top_blogers_link" style="clear:both; text-align:center; padding-top:10px;"><a href="/blogs/" target="_blank">Переглянути всі блоги</a></div>';
+
+            $html .= '</div>';
+
+            return $html;
+        }
 
         /**
          * Если в шорт коде не указана почта для первого блогера
@@ -56,7 +180,7 @@ if (!function_exists('short_last_posts_authors_main_block')) {
              */
             // Кешируем данные Query https://bit.ly/2XOhoj1
             $cache_key = 'rama_top_authors____shortcode_authors_emails';
-            if (!get_transient( $cache_key )){
+            if (false === get_transient($cache_key)){
                 $query = new WP_Query($args);
             // Кешируем в временную опцию https://bit.ly/39CeoJd
                 set_transient( $cache_key, $query, 6 * HOUR_IN_SECONDS );
@@ -73,6 +197,7 @@ if (!function_exists('short_last_posts_authors_main_block')) {
             foreach ($query->posts as $post){
 //                ddd($post->post_author);
                 $user = get_user_by( 'id', $post->post_author );
+                if (!$user) continue; // Перевірка чи користувач існує
                 $user_email = $user->user_email;
                 // Делаем проверку на топ блоггера
                 if (in_array("author", $user->roles)){
@@ -181,7 +306,7 @@ if (!function_exists('short_last_posts_authors_main_block')) {
 
 
                         // UserPhoto
-                        $photo_emptu = "/wp-content/uploads/2021/11/empty_user_photo.jpg";
+                        $photo_emptu = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ccircle cx='50' cy='35' r='20' fill='%23999'/%3E%3Cellipse cx='50' cy='85' rx='35' ry='25' fill='%23999'/%3E%3C/svg%3E";
                         $user_get_meta = get_user_meta($user_id); // array
 //                        s($user_get_meta);
 

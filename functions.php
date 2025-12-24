@@ -93,11 +93,11 @@ function sdstudio_enqueue_styles_PANORAMA(){
 //        wp_enqueue_script( 'rama-touchSwipe', get_stylesheet_directory_uri(). '/jquery.touchSwipe.min.js');
 
         //Nivo Lightbox
-//        wp_enqueue_style( 'nivo-lightbox', get_stylesheet_directory_uri() .'/nivo-lightbox/nivo-lightbox.min.css');
-//        wp_enqueue_style( 'nivo-lightbox_def', get_stylesheet_directory_uri() .'/nivo-lightbox/themes/default/default.css');
+        wp_enqueue_style( 'nivo-lightbox', get_stylesheet_directory_uri() .'/nivo-lightbox/nivo-lightbox.min.css');
+        wp_enqueue_style( 'nivo-lightbox_def', get_stylesheet_directory_uri() .'/nivo-lightbox/themes/default/default.css');
         wp_enqueue_script( 'rama-touchSwipe',get_stylesheet_directory_uri(). '/nivo-lightbox/jquery.touchSwipe.min.js');
-//        wp_register_script( 'nivo-lightbox', get_stylesheet_directory_uri(). '/nivo-lightbox/nivo-lightbox.min.js');
-//        wp_enqueue_script('nivo-lightbox');
+        wp_register_script( 'nivo-lightbox', get_stylesheet_directory_uri(). '/nivo-lightbox/nivo-lightbox.min.js', array('jquery'), '', true);
+        wp_enqueue_script('nivo-lightbox');
     }
 
     wp_enqueue_script( 'functions.js', get_stylesheet_directory_uri() . '/functions.js','','',true);
@@ -648,6 +648,35 @@ function force_classic_editor_for_users() {
 }
 // Запускаємо при завантаженні адмінки
 add_action('admin_init', 'force_classic_editor_for_users');
+
+/**
+ * Зміна aria-label для російської мови в WPML
+ * Використовуємо output buffering для заміни в фінальному HTML
+ */
+add_action('wp_loaded', function() {
+    ob_start(function($html) {
+        // Заміна aria-label
+        $html = str_replace(
+            'aria-label="Перемкнути на Russian"',
+            'aria-label="Перемкнути на мову окупантів"',
+            $html
+        );
+        // Заміна title
+        $html = str_replace(
+            'title="Перемкнути на Russian"',
+            'title="Перемкнути на мову окупантів"',
+            $html
+        );
+        return $html;
+    });
+});
+
+add_action('shutdown', function() {
+    if (ob_get_level() > 0) {
+        ob_end_flush();
+    }
+}, 0);
+
 
 
 // =====================================================

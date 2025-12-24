@@ -83,7 +83,7 @@ if (!function_exists('rama_authors_list')){
                     $user_id  = $user_all_onfo->ID; // integer 311
                     $user_posts_count = count_user_posts($user_id,'post');
                     // UserPhoto
-                    $photo_emptu = "/wp-content/uploads/2021/11/empty_user_photo.jpg";
+                    $photo_emptu = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ccircle cx='50' cy='35' r='20' fill='%23999'/%3E%3Cellipse cx='50' cy='85' rx='35' ry='25' fill='%23999'/%3E%3C/svg%3E";
                     $user_get_meta = get_user_meta( $user_id); // array
 
                     $user_photo  = $user_get_meta['userphoto_image_file']; // string (7) "311.jpg"

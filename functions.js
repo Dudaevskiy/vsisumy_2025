@@ -52,11 +52,12 @@ jQuery(document).ready(function($) {
  */
 // Inicialize
 jQuery(document).ready(function($){
-    if (jQuery('body').hasClass('home')){
-        return false;
-    };
-    // jQuery('a[rel=\"lightbox\"],a[rel^=\"attachment\"],a[data-rel^=\"attachment-\"], [data-rel^=\"lightbox\"], .nivo-lightbox-content, body.single-announce .single-featured > a, body.single-project .single-featured > a').nivoLightbox({
-    jQuery('a[rel="lightbox"],a[rel^="attachment"],a[data-rel^="attachment-"], [data-rel^="lightbox"], .nivo-lightbox-content, body.single-kalendar_istor_podiy .single-featured > a, body.single-announce .single-featured > a, body.single-project .single-featured > a').nivoLightbox({
+    // Перевіряємо чи завантажений nivo-lightbox
+    if (typeof jQuery.fn.nivoLightbox === 'undefined') {
+        return;
+    }
+    // Lightbox для галерей та зображень (працює на всіх сторінках)
+    jQuery('a[rel="lightbox"], a[rel^="attachment"], a[data-rel^="attachment-"], [data-rel^="lightbox"], .nivo-lightbox-content, .gallery a[href*=".jpg"], .gallery a[href*=".jpeg"], .gallery a[href*=".png"], .gallery a[href*=".gif"], .gallery a[href*=".webp"], body.single-kalendar_istor_podiy .single-featured > a, body.single-announce .single-featured > a, body.single-project .single-featured > a').nivoLightbox({
         // The effect to use when showing the lightbox
         // fade, fadeScale, slideLeft, slideRight, slideUp, slideDown, fall
         effect: 'fadeScale',
@@ -101,30 +102,42 @@ jQuery(document).ready(function($){
 // Novo Lightbox
 var CoutnImages = document.querySelectorAll('.single-container img').length;
 jQuery(document).ready(function($){
+    // Перевіряємо чи завантажений nivo-lightbox
+    if (typeof jQuery.fn.nivoLightbox === 'undefined') {
+        return;
+    }
 
+    // WordPress Gallery - додаємо атрибути для групування зображень
+    jQuery('.gallery').each(function(galleryIndex) {
+        var galleryId = 'wp-gallery-' + galleryIndex;
+        jQuery(this).find('a').each(function() {
+            jQuery(this).attr('data-lightbox-gallery', galleryId);
+            jQuery(this).attr('data-rel', 'lightbox');
+        });
+    });
 
     if(CoutnImages > 1){
         // Old Attachemnt
         jQuery('#content a[rel*="attachment"], #content a[rel*="attachment"]').each( function() {
-    //         var attr = $( this ).attr( 'data-rel' );
+    //         var attr = jQuery( this ).attr( 'data-rel' );
 
             // check data-rel attribute first
     //         if ( typeof attr === 'undefined' || attr == false ) {
             // if not found then try to check rel attribute for backward compatibility
-            $( this ).attr( 'data-lightbox-gallery','myGallery' );
-            $(this).attr("data-rel","lightbox");
+            jQuery( this ).attr( 'data-lightbox-gallery','myGallery' );
+            jQuery(this).attr("data-rel","lightbox");
     //         }
 
         } );
 
         // Inicialize
         jQuery('a[rel="lightbox"], [data-rel^="lightbox"], a[data-rel^="attachment-"], a[rel^="attachment"], .lightbox, body.single-announce .single-featured > a,  body.single-project .single-featured > a, body.single-kalendar_istor_podiy .single-featured > a').each( function() {
-            var attr = $( this ).attr( 'data-rel' );
+            var attr = jQuery( this ).attr( 'data-rel' );
 
             // check data-rel attribute first
             if ( typeof attr === 'undefined' || attr == false ) {
                 // if not found then try to check rel attribute for backward compatibility
-                attr = $( this ).attr( 'rel' );
+                attr = jQuery( this ).attr( 'rel' );
 
             }
 
@@ -133,7 +146,7 @@ jQuery(document).ready(function($){
                 var match = attr.match( new RegExp( 'lightbox' + '\\-(gallery\\-(?:[\\da-z]{1,4}))', 'ig' ) );
 
                 if ( match !== null ){
-                    $( this ).attr( 'data-lightbox-gallery', match[0] );
+                    jQuery( this ).attr( 'data-lightbox-gallery', match[0] );
                 }
             }
         } );
@@ -142,20 +155,20 @@ jQuery(document).ready(function($){
     // Swipe
     // jQuery(function(){
         var addSwipeTo = function(selector) {
-            $(selector).swipe("destroy");
-            $(selector).swipe({
+            jQuery(selector).swipe("destroy");
+            jQuery(selector).swipe({
                 swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
                     if (direction == "left") {
-                        $(".nivo-lightbox-next").trigger("click");
+                        jQuery(".nivo-lightbox-next").trigger("click");
                     }
                     if (direction == "right") {
-                        $(".nivo-lightbox-prev").trigger("click");
+                        jQuery(".nivo-lightbox-prev").trigger("click");
                     }
                 }
             });
         };
 
-        $(document).on('click', ".lightbox, a[rel^=\"attachment\"], [data-rel=\"lightbox\"]", function(){
+        jQuery(document).on('click', ".lightbox, a[rel^=\"attachment\"], [data-rel=\"lightbox\"], .gallery a", function(){
             addSwipeTo(".nivo-lightbox-overlay");
         });
     // });

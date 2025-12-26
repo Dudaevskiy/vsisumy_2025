@@ -100,7 +100,9 @@ function rama_last_posts($atts)
      */
     if ($atts['last'] == "true") {
         // Кешируем данные https://bit.ly/2XOhoj1
-        $cache_key = 'cache_query__last_posts';
+        // Додаємо мову до ключа кешу для WPML
+        $current_lang = apply_filters('wpml_current_language', 'uk');
+        $cache_key = 'cache_query__last_posts_' . $current_lang;
 
         $cached_html = get_transient( $cache_key );
         // Перевіряємо чи кеш валідний (не порожній і містить пости)
@@ -243,7 +245,9 @@ function rama_last_posts($atts)
      */
     if ($popular == "true") {
         // Кешируем данные https://bit.ly/2XOhoj1
-        $cache_key = 'cache_query__popular';
+        // Додаємо мову до ключа кешу для WPML
+        $current_lang = apply_filters('wpml_current_language', 'uk');
+        $cache_key = 'cache_query__popular_' . $current_lang;
 
         if ( !$html = get_transient( $cache_key ) ) {
             // =============================
@@ -307,7 +311,9 @@ function rama_last_posts($atts)
      */
     if ($comments == "true") {
         // Кешируем данные https://bit.ly/2XOhoj1
-        $cache_key = 'cache_query__comments';
+        // Додаємо мову до ключа кешу для WPML
+        $current_lang = apply_filters('wpml_current_language', 'uk');
+        $cache_key = 'cache_query__comments_' . $current_lang;
 
         if ( !$html = get_transient( $cache_key ) ) {
             // =============================
@@ -390,6 +396,31 @@ add_shortcode('rama_last_posts', 'rama_last_posts');
 
 // Enable shortcodes in text widgets
 add_filter('rama_last_posts', 'do_shortcode');
+
+/**
+ * Очистити кеш rama_last_posts для всіх мов
+ * Використання: додай ?clear_rama_cache=1 до URL (тільки для адмінів)
+ */
+add_action('init', 'rama_clear_posts_cache');
+function rama_clear_posts_cache() {
+    if (isset($_GET['clear_rama_cache']) && current_user_can('manage_options')) {
+        $languages = array('uk', 'ru', 'en');
+        $cache_types = array('last_posts', 'popular', 'comments');
+
+        foreach ($languages as $lang) {
+            foreach ($cache_types as $type) {
+                delete_transient('cache_query__' . $type . '_' . $lang);
+            }
+        }
+
+        // Також видаляємо старі ключі без мови (для сумісності)
+        delete_transient('cache_query__last_posts');
+        delete_transient('cache_query__popular');
+        delete_transient('cache_query__comments');
+
+        wp_die('Кеш rama_last_posts очищено для всіх мов!');
+    }
+}
 
 
 /**

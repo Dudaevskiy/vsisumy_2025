@@ -13,8 +13,20 @@ if (!function_exists('rama_last_news_partners')){
             return false;
         }
 
-        $ID_CAT = (int)(isset($atts['cat_id']) ? $atts['cat_id'] : 10);
+        $ID_CAT_original = (int)(isset($atts['cat_id']) ? $atts['cat_id'] : 10);
         $view = (int)(isset($atts['view']) ? $atts['view'] : 5);
+
+        // WPML: отримуємо перекладену категорію для поточної мови
+        $ID_CAT = apply_filters('wpml_object_id', $ID_CAT_original, 'category', true);
+
+        // Переклади для інтерфейсу
+        $current_lang = apply_filters('wpml_current_language', 'uk');
+        $translations = array(
+            'uk' => 'Усі новини',
+            'ru' => 'Все новости',
+            'en' => 'All news',
+        );
+        $all_news_text = isset($translations[$current_lang]) ? $translations[$current_lang] : $translations['uk'];
 
         // Отримання закріплених постів з категорії
         $sticky_posts = get_option('sticky_posts');
@@ -71,7 +83,7 @@ if (!function_exists('rama_last_news_partners')){
             $html .= '</div>';
         }
 
-        $html .= '<div class="all"><a href="' . get_category_link($ID_CAT) . '">Усі новини</a></div>';
+        $html .= '<div class="all"><a href="' . get_category_link($ID_CAT) . '">' . $all_news_text . '</a></div>';
         $html .= '</div>';
         wp_reset_postdata();
         return $html;

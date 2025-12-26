@@ -43,7 +43,7 @@ $labels1 = array(
 'menu_name' => __( 'Спецкатегории', 'panorama' ),
 );
 // Добавляем древовидную таксономию 'genre' (как категории)
-register_taxonomy('special-cat', array('post','interview'), array(
+register_taxonomy('special-cat', array('post'), array(
 'hierarchical' => true,
 'labels' => $labels1,
 'show_ui' => true,

@@ -2,6 +2,7 @@
 
 //require_once get_stylesheet_directory( ) . '/jQuery_in_HTML.php';
 require_once get_stylesheet_directory( ) . '/content-project.php';
+require_once get_stylesheet_directory() . '/_WPML_FIXES.php';
 
 /***
  * SDStudio-WP_All_Import-Fixes.php
@@ -366,29 +367,28 @@ add_action('admin_init','manager_author_editor');
 
 /**/
 
-function true_apply_taxonomy_for_post_type(){
-	// add_meta_box() в данном случае не нужен
-	register_taxonomy_for_object_type('category', 'interview');
-}
- 
-add_action('admin_init','true_apply_taxonomy_for_post_type');  
- 
-function true_expanded_request_custom($q) {
-	if (isset($q['category_name'])) // для произвольных таксономий нужно использовать их название, например $q['product_category']
-		$q['post_type'] = array('post', 'interview');
-	return $q;
-}
- 
-add_filter('request', 'true_expanded_request_custom');
+// Деактивовано - interview більше не використовує категорії
+// function true_apply_taxonomy_for_post_type(){
+// 	register_taxonomy_for_object_type('category', 'interview');
+// }
+// add_action('admin_init','true_apply_taxonomy_for_post_type');
 
+// Деактивовано - interview більше не включається у категорійні запити
+// function true_expanded_request_custom($q) {
+// 	if (isset($q['category_name']))
+// 		$q['post_type'] = array('post', 'interview');
+// 	return $q;
+// }
+// add_filter('request', 'true_expanded_request_custom');
 
-function add_category_to_interview_post_type($args, $post_type) {
-    if ('interview' === $post_type) {
-        $args['taxonomies'] = array('category');
-    }
-    return $args;
-}
-add_filter('register_post_type_args', 'add_category_to_interview_post_type', 10, 2);
+// Деактивовано - interview більше не використовує категорії
+// function add_category_to_interview_post_type($args, $post_type) {
+//     if ('interview' === $post_type) {
+//         $args['taxonomies'] = array('category');
+//     }
+//     return $args;
+// }
+// add_filter('register_post_type_args', 'add_category_to_interview_post_type', 10, 2);
 
 
 
@@ -757,107 +757,10 @@ add_filter('wpml_use_tm_editor', '__return_false');
 
 
 
-/***
- * FIX sticky_posts END
- */
 /**
- * DEV
+ * DEV функції (для розробки та тестування)
  */
-/*
-array (10) [
-    'thumbnail' => array (3) [
-        'width' => integer 284
-        'height' => integer 211
-        'crop' => string (1) "1"
-    ]
-    'medium' => array (3) [
-        'width' => integer 284
-        'height' => integer 500
-        'crop' => bool FALSE
-    ]
-    'medium_large' => array (3) [
-        'width' => integer 768
-        'height' => integer 0
-        'crop' => bool FALSE
-    ]
-    'large' => array (3) [
-        'width' => integer 1300
-        'height' => integer 1300
-        'crop' => bool FALSE
-    ]
-    '1536x1536' => array (3) [
-        'width' => integer 1536
-        'height' => integer 1536
-        'crop' => bool FALSE
-    ]
-    '2048x2048' => array (3) [
-        'width' => integer 2048
-        'height' => integer 2048
-        'crop' => bool FALSE
-    ]
-    'list-thumb' => array (3) [
-        'width' => integer 100
-        'height' => integer 75
-        'crop' => bool TRUE
-    ]
-    'announce-thumb' => array (3) [
-        'width' => integer 90
-        'height' => integer 120
-        'crop' => bool TRUE
-    ]
-    'gallery-thumb' => array (3) [
-        'width' => integer 110
-        'height' => integer 82
-        'crop' => bool TRUE
-    ]
-    'small-feature' => array (3) [
-        'width' => integer 129
-        'height' => integer 95
-        'crop' => bool TRUE
-    ]
-]
-*/
-
-///**
-// * Исправление iframe при импорте, после бага с ними
-// */
-//if ($_SERVER['REQUEST_URI'] == "/dev-ne-udaljat-dlja-testirovanija-baga-s-iframe-src/"){
-//
-//    $original_post = 'http://rama.com.ua/sumah-patrulnyie-sostavili-protokol-na-voditelya-sovershivshego-letom-dtp/';
-//    $import_post_content = '<div class="old_post">В июне водитель авто ВАЗ-2107 въехал в летнюю площадку на ул. Набережная р. Стрелки. Троих человек, получивших травмы, госпитализировали. 55-летний мужчина сдал тест на употребление алкоголя - результат оказался негативным. Однако тогда же он сдал и анализы биосреды; и вот он как раз показал, что водитель всё-таки был нетрезвым. Таким образом, через три месяца патрульные всё же составили на водителя админпротокол по 130-й статье.
-//
-//Пресс-служба патрульной полиции Сумской области
-//<iframe title="YouTube video player" src="" frameborder="0" width="560" height="315"></iframe></div>';
-//
-//    $html_in_original_site = new DOMDocument();
-//    libxml_use_internal_errors( 1 );
-//    $html_in_original_site->loadHTMLfile( $original_post );
-//    $html_in_original_site->formatOutput = True;
-//
-//    ddd($html_in_original_site);
-//
-//
-//    $import_post_content = new SimpleXMLElement($import_post_content);
-//
-//
-//    foreach ($import_post_content->iframe as $iframe) {
-//
-//        if ($iframe['src'] == ""){
-//            // iframe src пуст
-//        }
-//
-//    }
-//    ddd($import_post_content);
-//
-//
-////    /**
-////     * И возвращаем HTML в кодировке
-////     */
-////    $import_post_content = html_entity_decode((string)$import_post_content->asXML(), ENT_NOQUOTES, 'UTF-8');
-//
-//
-//
-//}
+require_once get_stylesheet_directory() . '/functions_dev.php';
 
 
 
